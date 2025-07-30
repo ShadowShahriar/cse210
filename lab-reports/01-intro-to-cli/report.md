@@ -1,7 +1,7 @@
 ---
 title: Operating Systems
 author: S. Shahriar <shadowshahriar@gmail.com>
-subject: Assignment 1
+subject: Lab Report 1
 keywords: os, wsl, ubuntu
 colorTheme: light
 codeTheme: stackoverflow-light
@@ -37,7 +37,7 @@ preset: none
 			<th>:</th><td>CSE 210</td>
 		</tr>
 		<tr>
-			<th>Assignment No.</th>
+			<th>Lab Report No.</th>
 			<th>:</th><td>01</td>
 		</tr>
 		<tr>
