@@ -66,6 +66,7 @@ int main()
 	float sum_wt = 0.0;
 	float sum_tat = 0.0;
 
+	cout << endl;
 	for (int i = 0; i < n; i++)
 	{
 		cout << "Process " << processes[i].process_id << ": ";

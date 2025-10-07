@@ -92,6 +92,7 @@ int main()
 	float avg_wt = 0.0;
 	float avg_tat = 0.0;
 
+	cout << endl;
 	for (int i = 0; i < n; i++)
 	{
 		cout << "Process " << processes[i].process_id << ": ";
@@ -114,4 +115,5 @@ int main()
 	cout << "Average Turnaround Time: \t";
 	cout << fixed << setprecision(2) << avg_tat;
 	cout << " time units" << endl;
+	return 0;
 }

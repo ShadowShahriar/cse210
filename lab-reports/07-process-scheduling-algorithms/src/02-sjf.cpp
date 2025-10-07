@@ -88,6 +88,7 @@ int main()
 
 	sort(processes.begin(), processes.end(), sortByID);
 
+	cout << endl;
 	for (int i = 0; i < n; i++)
 	{
 		cout << "Process " << processes[i].process_id << ": ";
