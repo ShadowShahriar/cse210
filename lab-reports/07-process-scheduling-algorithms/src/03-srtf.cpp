@@ -7,18 +7,13 @@ using namespace std;
 struct process
 {
 	int process_id = 0;
-	int arrival_time = 0;
 	int burst_time = 0;
+	int arrival_time = 0;
 	int completion_time = 0;
-	int turn_around_time = 0;
 	int waiting_time = 0;
-	bool completed = 0;
+	int turn_around_time = 0;
+	int remaining_time = 0;
 };
-
-bool sortByArrival(const process &p1, const process &p2)
-{
-	return p1.arrival_time < p2.arrival_time;
-}
 
 bool sortByID(const process &p1, const process &p2)
 {
@@ -32,61 +27,70 @@ int main()
 
 	cout << "Enter the number of processes: ";
 	cin >> n;
-
 	for (int i = 0; i < n; i++)
-	{
 		processes.push_back({i + 1});
-		processes[i].completed = false;
-	}
 
 	cout << endl;
 	cout << "Enter the CPU times" << endl;
 	for (int i = 0; i < n; i++)
+	{
 		cin >> processes[i].burst_time;
+		processes[i].remaining_time = processes[i].burst_time;
+	}
 
 	cout << endl;
 	cout << "Enter the arrival times" << endl;
 	for (int i = 0; i < n; i++)
 		cin >> processes[i].arrival_time;
 
-	sort(processes.begin(), processes.end(), sortByArrival);
-
 	int timer = 0;
 	int completed_processes = 0;
-	float sum_wt = 0;
-	float sum_tat = 0;
+	int shortest_job_index = -1;
+	int min_remaining_time = INT_MAX;
+	bool process_running = false;
 
 	while (completed_processes < n)
 	{
-		int min_job_index = -1;
-		int min_bt = INT_MAX;
+		min_remaining_time = INT_MAX;
+		shortest_job_index = -1;
+		process_running = false;
 
 		for (int i = 0; i < n; ++i)
-			if (processes[i].arrival_time <= timer && !processes[i].completed)
+			if (processes[i].arrival_time <= timer && processes[i].remaining_time > 0)
 			{
-				if (processes[i].burst_time < min_bt)
+				if (processes[i].remaining_time < min_remaining_time)
 				{
-					min_bt = processes[i].burst_time;
-					min_job_index = i;
+					min_remaining_time = processes[i].remaining_time;
+					shortest_job_index = i;
+					process_running = true;
 				}
 			}
 
-		if (min_job_index != -1)
+		if (!process_running)
 		{
-			process &curr_process = processes[min_job_index];
-			curr_process.completion_time = timer + curr_process.burst_time;
+			timer++;
+			continue;
+		}
+
+		process &curr_process = processes[shortest_job_index];
+		curr_process.remaining_time--;
+		timer++;
+
+		if (curr_process.remaining_time == 0)
+		{
+			completed_processes++;
+			curr_process.completion_time = timer;
 			curr_process.turn_around_time = curr_process.completion_time - curr_process.arrival_time;
 			curr_process.waiting_time = curr_process.turn_around_time - curr_process.burst_time;
-
-			timer = curr_process.completion_time;
-			curr_process.completed = true;
-			completed_processes++;
 		}
-		else
-			timer++;
 	}
 
 	sort(processes.begin(), processes.end(), sortByID);
+
+	float sum_wt = 0.0;
+	float sum_tat = 0.0;
+	float avg_wt = 0.0;
+	float avg_tat = 0.0;
 
 	for (int i = 0; i < n; i++)
 	{
@@ -98,8 +102,6 @@ int main()
 		sum_tat += processes[i].turn_around_time;
 	}
 
-	float avg_wt = 0.0;
-	float avg_tat = 0.0;
 	avg_wt = sum_wt / (float)n;
 	avg_tat = sum_tat / (float)n;
 
@@ -112,5 +114,4 @@ int main()
 	cout << "Average Turnaround Time: \t";
 	cout << fixed << setprecision(2) << avg_tat;
 	cout << " time units" << endl;
-	return 0;
 }
