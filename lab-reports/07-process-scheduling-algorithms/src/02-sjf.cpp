@@ -7,11 +7,12 @@ using namespace std;
 struct process
 {
 	int process_id = 0;
-	int burst_time = 0;
 	int arrival_time = 0;
+	int burst_time = 0;
 	int completion_time = 0;
-	int waiting_time = 0;
 	int turn_around_time = 0;
+	int waiting_time = 0;
+	bool completed = 0;
 };
 
 bool sortByArrival(const process &p1, const process &p2)
@@ -31,8 +32,12 @@ int main()
 
 	cout << "Enter the number of processes: ";
 	cin >> n;
+
 	for (int i = 0; i < n; i++)
+	{
 		processes.push_back({i + 1});
+		processes[i].completed = false;
+	}
 
 	cout << endl;
 	cout << "Enter the CPU times" << endl;
@@ -46,25 +51,44 @@ int main()
 
 	sort(processes.begin(), processes.end(), sortByArrival);
 
-	int time_frame = 0;
-	for (int i = 0; i < n; i++)
-	{
-		time_frame += processes[i].burst_time;
-		processes[i].turn_around_time = time_frame - processes[i].arrival_time;
+	int timer = 0;
+	int completed_processes = 0;
+	float sum_wt = 0;
+	float sum_tat = 0;
 
-		if (i == 0)
-			processes[i].waiting_time = 0;
+	while (completed_processes < n)
+	{
+		int min_job_index = -1;
+		int min_bt = INT_MAX;
+
+		for (int i = 0; i < n; ++i)
+		{
+			if (processes[i].arrival_time <= timer && !processes[i].completed)
+			{
+				if (processes[i].burst_time < min_bt)
+				{
+					min_bt = processes[i].burst_time;
+					min_job_index = i;
+				}
+			}
+		}
+
+		if (min_job_index != -1)
+		{
+			process &curr_process = processes[min_job_index];
+			curr_process.completion_time = timer + curr_process.burst_time;
+			curr_process.turn_around_time = curr_process.completion_time - curr_process.arrival_time;
+			curr_process.waiting_time = curr_process.turn_around_time - curr_process.burst_time;
+
+			timer = curr_process.completion_time;
+			curr_process.completed = true;
+			completed_processes++;
+		}
 		else
-			processes[i].waiting_time = processes[i].turn_around_time - processes[i].burst_time;
+			timer++;
 	}
 
 	sort(processes.begin(), processes.end(), sortByID);
-
-	float avg_wt = 0.0;
-	float avg_tat = 0.0;
-
-	float sum_wt = 0.0;
-	float sum_tat = 0.0;
 
 	for (int i = 0; i < n; i++)
 	{
@@ -76,6 +100,8 @@ int main()
 		sum_tat += processes[i].turn_around_time;
 	}
 
+	float avg_wt = 0.0;
+	float avg_tat = 0.0;
 	avg_wt = sum_wt / (float)n;
 	avg_tat = sum_tat / (float)n;
 
