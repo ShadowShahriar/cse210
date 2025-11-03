@@ -5,3 +5,4 @@
 .old
 *.txt
 desktop.ini
+**/.submit
